@@ -1,8 +1,8 @@
 {
-  "name": "02-hello-world-johnny-five",
+  "name": "02-02-hello-world-johnny-five",
   "version": "1.0.0",
   "description": "",
-  "main": "hello.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

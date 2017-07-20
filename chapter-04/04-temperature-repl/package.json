@@ -1,8 +1,8 @@
 {
-  "name": "04-temperature-repl",
+  "name": "04-04-temperature-repl",
   "version": "1.0.0",
   "description": "",
-  "main": "hello.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

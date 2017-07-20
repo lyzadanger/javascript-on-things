@@ -1,8 +1,8 @@
 {
-  "name": "03-hello-world-stop",
+  "name": "02-03-hello-world-stop",
   "version": "1.0.0",
   "description": "",
-  "main": "hello-stop.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
