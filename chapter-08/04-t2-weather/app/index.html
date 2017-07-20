@@ -30,7 +30,7 @@
   <script>
   window.addEventListener('DOMContentLoaded', function () {
     var socket = io();
-    socket.on('change', updateData);
+    socket.on('weather', updateData);
   });
   function updateData (data) {
     ['temperature', 'pressure'].forEach(function (dataPoint) {

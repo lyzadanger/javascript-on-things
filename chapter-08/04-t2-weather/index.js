@@ -22,7 +22,7 @@ board.on('ready', () => {
 
   socket.on('connection', client => {
     weatherSensor.on('change', () => {
-      client.emit('change', {
+      client.emit('weather', {
         temperature: weatherSensor.thermometer.F,
         pressure: (weatherSensor.barometer.pressure * 10)
       });
