@@ -1,0 +1,17 @@
+{
+  "name": "08-04-t2-weather",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "*",
+    "johnny-five": "*",
+    "tessel-io": "*"
+  }
+}

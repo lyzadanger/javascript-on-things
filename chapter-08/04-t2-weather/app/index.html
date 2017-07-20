@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" href="style.css" type="text/css" />
+  <title>Current Conditions</title>
+</head>
+<body>
+
+  <main role="main">
+    <h1>Current Conditions</h1>
+    <div class="row">
+      <div class="col">
+        <div class="data">
+          <h2>Temperature</h2>
+          <span class="data--value" id="temperature">--.--</span>
+          <small class="data--unit">F</small>
+        </div>
+      </div>
+      <div class="col">
+        <div class="data">
+          <h2>Pressure</h2>
+          <span class="data--value" id="pressure">---.--</span>
+          <small class="data--unit">mBar</small>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+  window.addEventListener('DOMContentLoaded', function () {
+    var socket = io();
+    socket.on('change', updateData);
+  });
+  function updateData (data) {
+    ['temperature', 'pressure'].forEach(function (dataPoint) {
+      document.getElementById(dataPoint).innerHTML = data[dataPoint].toFixed(2);
+    });
+    document.querySelectorAll('.data--value').forEach(function (el) {
+      el.classList.add('connected');
+    });
+  }
+  </script>
+ </body>
+</html>

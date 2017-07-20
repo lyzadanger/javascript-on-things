@@ -1,0 +1,36 @@
+html {
+  font-family    : "Helvetica Neue", "Helvetica", "Arial", san-serif;
+}
+.row {
+ display         : flex;
+ justify-content : center;
+ max-width       : 48rem;
+ margin          : auto;
+}
+.row .col {
+ margin          : auto;
+ padding         : 2rem;
+}
+h1, h2 {
+ margin          : 0;
+ text-align      : center;
+}
+h2 {
+ font-size       : 1.5rem;
+}
+small {
+ color           : #999;
+ font-size       : 0.65em;
+}
+.data {
+ padding         : 1.5rem;
+ background-color: #eee;
+ border-radius   : 10px;
+ font-size       : 3rem;
+}
+.data--value {
+ font-weight     : bold;
+}
+.connected {
+ color           : #093;
+}
