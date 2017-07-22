@@ -1,0 +1,7 @@
+{
+  "id": "compass.websockets.lyza.com",
+  "title": "hmc5883L",
+  "Element": {
+    "main": "main"
+  }
+}

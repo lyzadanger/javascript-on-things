@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Live Compass Heading</title>
+    <style>
+      #compass {
+        text-align: center;
+        font-size: 2em;
+        font-family: "Helvetica", sans-serif;
+        margin: 2em;
+      }
+    </style>
+    <script>
+      window.addEventListener('load', function () {
+        var ws = new WebSocket('ws://10.0.0.17:80');
+        ws.onmessage = function (message) {
+          var data = JSON.parse(message.data);
+          document.getElementById('direction').innerHTML = data.heading;
+        };
+      });
+    </script>
+  </head>
+  <body>
+    <div id="compass">
+      <label for="direction">Compass Heading</label><div id="direction">...</div>
+    </div>
+  </body>
+</html>
