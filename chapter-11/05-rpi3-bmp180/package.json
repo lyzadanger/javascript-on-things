@@ -1,0 +1,16 @@
+{
+  "name": "11-05-rpi3-bmp180",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "johnny-five": "*",
+    "raspi-io": "*"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "11-07-arduino-uno-weather",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.1",
+    "johnny-five": "*",
+    "socket.io": "^1.7.3"
+  }
+}
