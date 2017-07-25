@@ -1,0 +1,39 @@
+<html>
+ <head>
+  <title>Puck.js LED Toggle</title>
+  <style>
+    h1 {
+      font-family: "Helvetica";
+    }
+    button {
+      display: block;
+      width: 6em;
+      height: 4em;
+      margin: 2em;
+      background-color: #eee;
+      border: 1px solid #ccc;
+      font-size: 1.75em;
+    }
+  </style>
+ </head>
+  <body>
+  <h1>Web Bluetooth Puck.js Toggle</h1>
+  <div id="message"></div>
+  <button id="onButton">ON</button>
+  <button id="offButton">OFF</button>
+  <script src="https://www.puck-js.com/puck.js"></script>
+  <script>
+    window.addEventListener('load', () => {
+      if ('bluetooth' in window.navigator) {
+        const onButton = window.document.getElementById('onButton');
+        const offButton = window.document.getElementById('offButton');
+        onButton.addEventListener('click', () => Puck.write('LED1.set();\n'));
+        offButton.addEventListener('click', () => Puck.write('LED1.reset();\n'));
+      } else {
+        const mEl = window.document.getElementById('message');
+        mEl.innerHTML = "Looks like your browser doesn't support Bluetooth!";
+      }
+    });
+  </script>
+  </body>
+</html>
