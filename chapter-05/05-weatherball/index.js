@@ -4,11 +4,12 @@ const five    = require('johnny-five');
 const API_KEY = 'YOUR API KEY HERE';
 const LAT     = '43.3463760';
 const LONG    = '-72.6395340';
-const API_URL = 'https://api.forecast.io/forecast';
+const API_URL = 'https://api.darksky.net/forecast';
 
 const board   = new five.Board();
 
 board.on('ready', () => {
+  console.log('Powered by Dark Sky: https://darksky.net/poweredby/');
   const rgb        = new five.Led.RGB({ pins: [3, 5, 6] });
   const requestURL = `${API_URL}/${API_KEY}/${LAT},${LONG}`;
 
