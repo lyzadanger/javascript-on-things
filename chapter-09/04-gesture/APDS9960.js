@@ -5,58 +5,77 @@ const util    = require('util');
 const I2C_ADDR = 0x39; // Sensor's hardwired I2C address (p.8)
 const DEVICE_ID = 0xAB; // The device will report this ID (p.25)
 
-const REGISTERS = { // Register addresses
+// Register addresses; only those used by plugin included
+const REGISTERS = {
   ENABLE   : 0x80, // Enable different sensors/features (p.20)
   WTIME    : 0x83, // Wait time config value (p.21)
   PPULSE   : 0x8E, // Proximity pulse count and length (p.23)
-  CONFIG2  : 0x90, // Second configuration register (p.24), specifically for LED boost
+  CONFIG2  : 0x90, // Second configuration register (p.24), for LED boost
   DEVICE_ID: 0x92, // Contains device ID (0xAB) (p.25)
   GPENTH   : 0xA0, // Entry proximity threshold for gestures (p.27)
   GEXTH    : 0xA1, // Exit proximity threshold for gestures (p.28)
-  GCONF1   : 0xA2, // Gesture configuration 1: gesture detection masking (p.28)
-  GCONF2   : 0xA3, // Gesture configuration 2: gain, LED drive, gesture wait time (p.29)
+  GCONF1   : 0xA2, // Gesture config 1: gesture detection masking (p.28)
+  GCONF2   : 0xA3, // G config 2: gain, LED drive, gesture wait time (p.29)
   GOFFSET_U: 0xA4, // Gesture offset (up) (p.30)
   GOFFSET_D: 0xA5, // Gesture offset (down) (p.30)
   GPULSE   : 0xA6, // Gesture Pulse count and length (p.31)
   GOFFSET_L: 0xA7, // Gesture offset (left) (p.30)
   GOFFSET_R: 0xA9, // Gesture offset (right) (p.31)
-  GCONF4   : 0xAB, // Gesture configuration 4: interrupts, mode enable (p.32)
-  GFLVL    : 0xAE, // Gesture FIFO level; reports # of datasets in FIFO (p.32)
-  GSTATUS  : 0xAF, // Gesture status info, bit 0 indicates available valid data (p.33)
-  GFIFO_U  : 0xFC, // First FIFO register for data (RAM)—read data from here (p.33)
+  GCONF4   : 0xAB, // Gesture config 4: interrupts, mode enable (p.32)
+  GFLVL    : 0xAE, // Gesture FIFO level: # of datasets in FIFO (p.32)
+  GSTATUS  : 0xAF, // Gesture status; bit 0 indicates available data (p.33)
+  GFIFO_U  : 0xFC, // 1st FIFO register in (RAM)—read data from here (p.33)
 };
 
 const FLAGS = {
-  GFIFOTH  : 0b10000000, // FIFO threshold            : trigger interrupt after 4 datasets in FIFO (GCONF1 <7:6> p.28)
-  GGAIN    : 0b01000000, // Gesture gain control      : 4x (GCONF2 <6:5> p.29)
-  GLDRIVE  : 0b00000000, // Gesture LED drive strength: 100mA (GCONF2 <4:3> p.29)
-  GWTIME   : 0b00000001, // Gesture wait time         : 2.8ms (GCONF2 <2:0> p.29)
-  GPLEN    : 0b11000000, // Gesture pulse length      : 32µs (GPULSE <7 :6> p.31)
-  GPULSE   : 0b00001001, // Gesture pulse count       : 10 (9 + 1) (GPULSE <5:0> p.31)
-  GVALID   : 0b00000001, // GSTATUS register value indicates valid data if 0th bit is 1
-  PPLEN    : 0b10000000, // Proximity pulse length    : 16µs (PPULSE <7 :6> p.23)
-  PPULSE   : 0b10001001, // Proximity pulse count     : 10 (9 + 1) (PPULSE <5:0> p.23)
-  LED_BOOST: 0b00110000, // LED drive boost           : 300% (CONFIG2 <5:4> p.24),
-  GIEN     : 0b00000010, // Gesture interrupt enable  : yes (GCONF4 <1> p.32)
-  GMODE    : 0b00000001, // Gesture mode              : yes! (GCONF4 <0> p.32),
-  ENABLE   : 0b01001101, // Enable features           : Gesture, Wait, Proximity, Power on (ENABLE, p.20)
+  GFIFOTH  : 0b10000000, /* FIFO threshold: trigger interrupt after
+                            4 datasets in FIFO (GCONF1 <7:6> p.28) */
+  GGAIN    : 0b01000000, /* Gesture gain control:
+                            4x (GCONF2 <6:5> p.29) */
+  GLDRIVE  : 0b00000000, /* Gesture LED drive strength:
+                          * 100mA (GCONF2 <4:3> p.29) */
+  GWTIME   : 0b00000001, /* Gesture wait time:
+                            2.8ms (GCONF2 <2:0> p.29) */
+  GPLEN    : 0b11000000, /* Gesture pulse length:
+                            32µs (GPULSE <7 :6> p.31) */
+  GPULSE   : 0b00001001, /* Gesture pulse count:
+                            10 (9 + 1) (GPULSE <5:0> p.31) */
+  GVALID   : 0b00000001, /* GSTATUS register value
+                            indicates valid data if 0th bit is 1 */
+  PPLEN    : 0b10000000, /* Proximity pulse length:
+                            16µs (PPULSE <7 :6> p.23) */
+  PPULSE   : 0b10001001, /* Proximity pulse count:
+                            10 (9 + 1) (PPULSE <5:0> p.23) */
+  LED_BOOST: 0b00110000, /* LED drive boost:
+                            300% (CONFIG2 <5:4> p.24) */
+  GIEN     : 0b00000010, /* Gesture interrupt enable:
+                            yes (GCONF4 <1> p.32) */
+  GMODE    : 0b00000001, /* Gesture mode:
+                            yes! (GCONF4 <0> p.32) */
+  ENABLE   : 0b01001101, /* Enable features:
+                            Gesture, Wait, Proximity, Power on
+                            (ENABLE, p.20) */
 };
 
-const SETUP_DEFAULTS = { // During setup, (value) is written to each register (key)
-  ENABLE   : 0x00, // Disable all things, effectively turning the chip off (p. 20)
-  GPENTH   : 40, // Entry proximity threshold (this number is magic ATM)
-  GEXTH    : 30, // Exit proximity threshold (this number is magic ATM)
+// During setup, (value) is written to each register (key)
+const SETUP_DEFAULTS = {
+  ENABLE   : 0x00,          /* Disable all things,
+                              effectively turning the chip off (p. 20) */
+  GPENTH   : 40,            // Entry proximity threshold
+  GEXTH    : 30,            // Exit proximity threshold
   GCONF1   : FLAGS.GFIFOTH, // FIFO interrupt threshold
   GCONF2   : FLAGS.GGAIN | FLAGS.GLDRIVE | FLAGS.GWTIME, // Gesture gain, LED drive, wait time
-  GOFFSET_U: 0x00, // no offset
-  GOFFSET_D: 0x00, // no offset
-  GOFFSET_L: 0x00, // no offset
-  GOFFSET_R: 0x00, // no offset
+  GOFFSET_U: 0x00,          // no offset
+  GOFFSET_D: 0x00,          // no offset
+  GOFFSET_L: 0x00,          // no offset
+  GOFFSET_R: 0x00,          // no offset
   GPULSE   : FLAGS.GPLEN | FLAGS.GPULSE // pulse count and length,
 };
 
-const ENABLE_VALUES = { // During enable, each (value) is written to register (key)
-  WTIME  : 0xFF, // Wait time between cycles in low-power mode: 2.78ms (p. 21)
+// During enable, each (value) is written to register (key)
+const ENABLE_VALUES = {
+  WTIME  : 0xFF,                       /* Wait time between cycles in
+                                          low-power mode: 2.78ms (p. 21) */
   PPULSE : FLAGS.PPLEN | FLAGS.PPULSE, // Proximity pulse length and count
   CONFIG2: FLAGS.LED_BOOST,
   GCONF4 : FLAGS.GIEN | FLAGS.GMODE,
