@@ -2,9 +2,8 @@ const five     = require('johnny-five');
 const express  = require('express');
 const SocketIO = require('socket.io');
 
-const path = require('path');
 const http = require('http');
-const os   = require('os');
+const path = require('path');
 
 const app    = new express();
 const server = new http.Server(app);
@@ -29,6 +28,6 @@ board.on('ready', () => {
   });
 
   server.listen(3000, () => {
-    console.log(`http://${os.networkInterfaces().wlan0[0].address}:3000`);
+    console.log(`http://localhost:3000`);
   });
 });
